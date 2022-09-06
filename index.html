@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gp文章</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <header>
+    <div class="options">
+      <div>最小字数:<input id="min" type="range" min="500" max="5000" step="100" value="2000"><span>2000</span></input>
+      </div>
+      <div>最大字数:<input id="max" type="range" min="1000" max="10000" step="100" value="5000"><span>5000</span></input>
+      </div>
+    </div>
+    <div><a href="">原版</a></div>
+    <div class="title">
+      <span>标题：<input id="title" type="text" value=""></input></span>
+      <button id="generate">生成</button>
+      <button id="anotherTitle">换</button>
+    </div>
+  </header>
+  <main>
+    <article></article>
+  </main>
+  <script type="module">
+    import { generate } from './lib/generator.js'
+    import { createRandomPick } from './lib/random.js'
+    const options = document.querySelector('.options');
+    const config = {min:2000,max:5000};
+    options.addEventListener('change',({target}) => {
+      const num = Number(target.value);
+      config[target.id] = num;
+      target.parentNode.querySelector('input').innerHTML = num
+      console.log(target.parentNode.querySelector('input'))
+    })
+
+    const generatorButton = document.getElementById('generate');
+    const anotherTitleButton = document.getElementById('anotherTitle');
+    const article = document.querySelector('article');
+    const titleEl = document.querySelector('#title');
+
+    (async function() {
+      const corpus = await (await fetch('./corpus/data.json')).json();
+      const pickTitle = createRandomPick(corpus.title);
+      titleEl.value = pickTitle();
+      generatorButton.addEventListener('click',() => {
+        const text = generate(pickTitle,{corpus,...config});
+        article.innerHTML = `<section>${text.join("</section><section>")}</section>`
+      });
+
+      anotherTitleButton.addEventListener('click', () => {titleEl.value = pickTitle();if(article.innerHTML) generateButton.click();});
+    }())
+  </script>
+</body>
+
+</html>
