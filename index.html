@@ -27,9 +27,9 @@
   <main>
     <article></article>
   </main>
+  <script src="https://raw.githubusercontent.com/lihaosongbluejeans/bullshit_test/master/dist/index.js"></script>
   <script type="module">
-    import { generate } from './lib/generator.js'
-    import { createRandomPick } from './lib/random.js'
+    const { generate, createRandomPick, loadCorpus} = bullshitGenerator
     const options = document.querySelector('.options');
     const config = {min:2000,max:5000};
     options.addEventListener('change',({target}) => {
@@ -45,7 +45,7 @@
     const titleEl = document.querySelector('#title');
 
     (async function() {
-      const corpus = await (await fetch('./corpus/data.json')).json();
+      const corpus = await loadCorpus();
       const pickTitle = createRandomPick(corpus.title);
       titleEl.value = pickTitle();
       generatorButton.addEventListener('click',() => {
